@@ -1,5 +1,6 @@
 import asyncio
 import os
+import shutil
 
 import aiofiles
 import httpx
@@ -10,7 +11,7 @@ DOC_ID = "doc_id"  # Replace with the actual document ID
 SUB_FOLDER = "sub_folder_id"  # Replace with the actual subfolder
 OUTPUT_FOLDER = "downloaded_pages"
 PDF_OUTPUT = "output_file_name.pdf"
-MAX_PAGE = 122  # Manually set the maximum number of pages
+MAX_PAGE = 123  # Manually set the maximum number of pages
 COOKIE = "!Proxy!flowpaperPHPSESSID=<php_sess_id>; JSESSIONID=<j_session_id>"  # Replace with your actual cookies
 MAX_RETRIES = 3  # Maximum number of retry attempts per page
 
@@ -98,9 +99,19 @@ def merge_images_to_pdf(image_files, output_pdf):
     print(f"Merged PDF saved as: {output_pdf}")
 
 
+def cleanup_folder(folder_path):
+    """Remove the folder and all its contents after merging."""
+    try:
+        shutil.rmtree(folder_path)
+        print(f"Removed folder: {folder_path}")
+    except Exception as e:
+        print(f"Error removing folder {folder_path}: {e}")
+
+
 async def main():
     image_files = await download_all_pages(MAX_PAGE)
     merge_images_to_pdf(image_files, PDF_OUTPUT)
+    cleanup_folder(OUTPUT_FOLDER)
 
 
 if __name__ == "__main__":
